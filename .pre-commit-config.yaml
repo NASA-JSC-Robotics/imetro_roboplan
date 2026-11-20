@@ -55,7 +55,3 @@ repos:
         ]
       - id: ruff-format
         args: ["--line-length=120"]
--   repo: https://github.com/astral-sh/ty-pre-commit
-    rev: v0.0.107
-    hooks:
-    -   id: ty
