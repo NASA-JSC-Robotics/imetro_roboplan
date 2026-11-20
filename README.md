@@ -1,6 +1,6 @@
-# imetro_behavior
+# imetro_roboplan
 
-Python based robotics behavior stack for [iMETRO](https://github.com/NASA-JSC-Robotics/imetro).
+Utilities based on the [RoboPlan](https://github.com/open-planning/roboplan) motion planning library for [iMETRO](https://github.com/NASA-JSC-Robotics/imetro).
 
 ## Getting Started
 
@@ -14,66 +14,8 @@ To get started,
 
 Then, you can open up a `pixi shell` and do all your development and testing there!
 
-## Running the Core
+## Packages Description
 
-Once you have your workspace built, you can run the 2 main applications.
-
-```bash
-ros2 run imetro_behavior run_behavior.py
-
-ros2 run imetro_behavior behavior_gui.py
-```
-
-Or launch them both together!
-
-```bash
-ros2 launch imetro_behavior run_behavior.launch.xml gui:=true
-```
-
-One your behavior tree executor is up and running, you can send it an action goal.
-For example,
-
-```bash
-ros2 action send_goal /execute_behavior imetro_behavior_msgs/action/ExecuteBehavior '{tree_file_name: nav_tree}'
-```
-
-The goal can also override the port values of the tree's main `BehaviorTree` with `input_mappings`.
-Values are strings, as they would be written in the tree XML.
-
-```bash
-ros2 action send_goal /execute_behavior imetro_behavior_msgs/action/ExecuteBehavior \
-  '{tree_file_name: my_tree, input_mappings: [{key: speed, value: "0.02"}]}'
-```
-
-## Running Behavior Trials
-
-The `imetro_behavior_testing` package runs a behavior tree once per trial of a test file, with different parameters each time.
-See [its README](src/imetro_behavior_testing/README.md).
-
-## Developing
-
-We use [pre-commit](https://github.com/pre-commit/pre-commit) inside the pixi configuration in this repo.
-
-Rather than running `pre-commit` yourself, run it as a pixi task as follows.
-
-```bash
-pixi run lint
-```
-
-You should also run your tests locally before submitting a pull request.
-
-```bash
-pixi run test
-```
-
-## Documentation
-
-Information on supported behaviors is available in [GitHub Pages](https://nasa-jsc-robotics.github.io/imetro_behavior/imetro_behavior.html).
-
-To build the docs locally, use the pixi action:
-
-```bash
-pixi run -e docs build-docs
-```
-
-Which will drop the compiled pydocs pages into `docs/`.
+* [imetro_roboplan](src/imetro_roboplan): RoboPlan motion planning server.
+* [imetro_roboplan_msgs](src/imetro_roboplan_msgs): Service definitions for the planning server.
+* [imetro_roboplan_behaviors](src/imetro_roboplan_behaviors): [imetro_behavior](https://github.com/NASA-JSC-Robotics/imetro_behavior) nodes and subtrees that use the planning server.

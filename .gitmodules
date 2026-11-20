@@ -1,0 +1,3 @@
+[submodule "src/external/roboplan-ros"]
+	path = src/external/roboplan-ros
+	url = git@github.com:open-planning/roboplan-ros.git

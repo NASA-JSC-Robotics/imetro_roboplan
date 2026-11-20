@@ -1,5 +1,5 @@
 [project]
-name = "imetro_behavior"
+name = "imetro_roboplan"
 version = "0.1.0"
 authors = [{ name = "Sebastian Castro", email = "sebastian.a.castrofernandez@nasa.gov" }]
 
@@ -16,41 +16,56 @@ channels = [
 scripts = ["scripts/entrypoint.sh"]
 
 [tool.pixi.activation.env]
+LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LIBRARY_PATH}"
+LD_LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
+LDFLAGS = "-L${CONDA_PREFIX}/lib -Wl,-rpath,${CONDA_PREFIX}/lib -fuse-ld=mold"
 COLCON_DEFAULT_OUTPUT_STYLE = "catkin_tools"
 COLCON_DEFAULTS_FILE = "${PIXI_PROJECT_ROOT}/config/colcon-defaults.yaml"
 RCUTILS_COLORIZED_OUTPUT = "1"
 PYTHONNOUSERSITE = "1"  # Never pick up packages from the user site-packages
 
+# Match the x86-64 baseline of conda-forge binaries, regardless of the compiler default.
+# Eigen's memory layout and allocator depend on this, so a mismatch crashes at runtime.
+[tool.pixi.target.linux-64.activation.env]
+CXXFLAGS = "-fuse-ld=mold -march=x86-64"
+
 [tool.pixi.tasks]
-build = "colcon build --cmake-args"
+# RoboPlan's conda-forge bindings use nanobind's stable ABI, which roboplan-ros must match.
+build = "colcon build --cmake-args -DROBOPLAN_ROS_STABLE_ABI=ON"
 lint = "pre-commit run -a"
 test = "colcon test"
 clean = "rm -rf build/* install/* log/*"
 
 [tool.pixi.dependencies]
+# Regular conda dependencies
+python = ">=3.11,<3.13"
+cmake = ">=4.1.2,<5"
+ccache = ">=4.13.1,<5"
+ninja = ">=1.13.1,<2"
+mold = ">=2.40.4,<3"
+pip = "*"
+
 # Python dependencies
 pre-commit = ">=4.6.2,<5"
+roboplan-python = ">=0.8.0,<0.9"
+nanobind = ">=3.1.0,<4"
+setuptools = "<80"  # Newer versions break colcon symlink installs
 
 # ROS dependencies
-colcon-common-extensions = "*"
+colcon-common-extensions = ">=0.3.0,<0.4"
+colcon-mixin = ">=0.2.3,<0.3"
 ros-jazzy-ros-base = "*"
+ros-jazzy-interactive-markers = "*"
+ros-jazzy-joint-state-broadcaster = "*"
+ros-jazzy-joint-trajectory-controller = "*"
+ros-jazzy-robot-state-publisher = "*"
+ros-jazzy-ros2-control = "*"
+ros-jazzy-rviz2 = "*"
+ros-jazzy-tf2-eigen = "*"
+ros-jazzy-topic-tools = "*"
+ros-jazzy-xacro = "*"
 
 ## ruff options
 
 [tool.ruff.lint.isort]
 known-first-party = ["imetro_roboplan", "imetro_roboplan_behaviors", "imetro_roboplan_msgs"]
-
-## ty (type checking) options
-
-[tool.ty.src]
-exclude = [
-    "src/external",
-    "scripts/",
-]
-
-[tool.ty.analysis]
-allowed-unresolved-imports = [
-    # "color_blob_centroid.**",
-    # "mockup_msgs.**",
-    # "mujoco_ros2_control_msgs.**",
-]
